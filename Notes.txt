@@ -1,0 +1,22 @@
+
+
+Check out buggy audio initializing!
+
+
+A. Try out Kevin's Audio Viz examples exactly as they are.
+B. Try using them on a basic scene. 
+C. Try them on cone in sufi viz.
+D. Try them on walls [modify amplitude for Ocean]
+E. If they don't work, use the analyzer from CurtViz and use Kevin's examples for ideas
+
+
+Minimum Viable Product:
+1 decent audio viz interaction
+1 decent click/touch/raycaster interaction 
+
+
+
+[check the aframe stuff open on phone... more *fluid* ideas?
+if not, that's ok!!!!!]
+
+[ways to incorporate Hawaii? Pala Pala inspo?]

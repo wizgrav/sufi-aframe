@@ -7,57 +7,25 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-<!--    <link rel="stylesheet"  type="text/css" href="css/style.css"/> -->
+<!-- livereload ~/SufiPlayer/kframe-master/components/audioanalyser/examples/volume -p 8000
+-->
 
 <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
 
 <script src="components/aframe-animation-component.js"></script>
 <script src="components/aframe-ui-components.js"></script>
-<script src="components/aframe-audioanalyzer-component.js"></script>
+<script src="components/aframe-audioanalyser-component.js"></script>
 <script src="components/aframe-extras.controls.js"></script>
 <script src="components/aframe-extras.primitives.js"></script>
-<script src="components/aframe-extras.shadows.js"></script>
 <script src="components/aframe-fit-texture-component.js"></script>
-
-
-
-
-<!--
-<script src="shaders/FilmShader.js"></script>
-<script src="shaders/FXAAShader.js"></script>
-<script src="components/film-grain.js"></script>
-<script src="components/fxaa.js"></script>
-<script src="components/compositor.js"></script>
--->
-
-
-<!--    <script src="adev/aframe.min.js"></script>
-    <script src="js/aframe-extras.controls.min.js"></script>
-    <script src="js/aframe-fence-component.min.js"></script>
--->
-
-
-
-<!--       <script src="js/aframe-asset-layz-load.min.js"></script> -->
-
-<!--    <script src="components/noise.js"></script> -->
-
-    <!--    <script src="shaders/FilmShader.js"></script>
-    <script src="shaders/FXAAShader.js"></script>
-    <script src="components/fxaa.js"></script>
-    <script src="components/film-grain.js"></script>
-    <script src="components/compositor.js"></script> -->
-    <!-- unsure if extra MATHS is necessary -->
-    <!-- <script src="extras/aframe-extras.math.js"></script> -->
 
     <!-- livereload ~/SufiPlayer/sufi-aframe -p 8000 -->
 
   </head>
   <body>
 
-
 <script>
-// Component to change to random color on click.
+// Component to change to execute multiple actions on click.
 AFRAME.registerComponent('cursor-listener', {
   init: function () {
     this.el.addEventListener('animationend', function (evt) {
@@ -67,47 +35,33 @@ AFRAME.registerComponent('cursor-listener', {
     });
   }
 });
-</script>
 
-
-<!--
-<script>
-AFRAME.registerComponent('clicky', {
+// Specifically analyze overall volume
+AFRAME.registerComponent('audioanalyser-volume-scale', {
   schema: {
-    name: {default: 'em'}
+    analyserEl: {type: 'selector'},
   },
-  init: function () {
-    var data = this.data;
-    this.el.addEventListener('click', function () {
-      this.emit(data.name);
+
+  tick: function () {
+    var analyserEl = this.data.analyserEl || this.el;
+    var analyserComponent;
+    var el = this.el;
+    var volume;
+
+    analyserComponent = analyserEl.components.audioanalyser;
+    if (!analyserComponent.analyser) { return; }
+    volume = analyserComponent.volume * .008;
+    el.setAttribute('scale', {
+      x: volume,
+      y: volume,
+      z: volume
     });
   }
 });
 
-AFRAME.registerComponent('click-you', {
-  schema: {
-    send: {}
-  },
-  init: function () {
-    var data = this.data;
-    this.el.addEventListener('click', function () {
-      document.querySelector('#curse').emit(data.send);
-      document.querySelector('#hihi').emit(data.send);
-      document.querySelector('#bye').emit(data.send);
-    });
-  }
-});
 </script>
--->
-
-
-
 
 <a-scene antialias="true">
-
-  <!--debug post-processing="true" compositor="film-grain fxaa" film-grain="grayscale: true; speed: 0.5;" fxaa=""-->
-  <!--fog="type: linear; color: #000; far: 40; near: 2"> -->
-<!-- post-processing="true" compositor="film-grain fxaa" fxaa="" film-grain="grayscale: false; speed: .8; sIntensity: 0.015; nIntensity: 0.10" -->
 
 <!--Load audio and visual assets. -->
 
@@ -132,45 +86,35 @@ AFRAME.registerComponent('click-you', {
           </a-cursor>
       </a-camera>
 
-
-      <!--<a-animation id="curse-go" attribute="visible" to="false" fill="forward" begin="gobye">-->
-
-
 <!-- sounds in space -->
 
 
-<a-entity id="dat1" cursor-listener geometry="primitive: sphere;" material="color: #3d8b75" metalness="1" position="0 4 0"
+<a-entity id="pulser" cursor-listener geometry="primitive: sphere;" material="color: #3d8b75" metalness="1" position="0 4 0"
  animation="property: geometry.radius; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: .5 1 .5"
  animation__color="property: material.color; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: #365"
- data-interactive="true"
-          sound="src: assets/datura.mp3" > <!-- click-you="send: gobye" -->
+ data-interactive="true">
           <a-animation cursor-listener id="bye" attribute="scale" begin="click" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
         </a-entity>
 
+<a-entity id="dat1" sound="src: assets/datura.mp3;" position="0 3 0">
+</a-entity>
 
+<a-entity id="analyser" position="0 3 0"
+ audioanalyser="src: #datura; enableBeatDetection: false; enableWaveform: false">
+</a-entity>
 
+<!-- small, conic display stand below floating sphere-->
 
-<!--  click to begin  -->
-<!--
-<a-box id="boxy" click-color-change height="2" width="2" depth="2" metalness=".3" ease-in-out="Quad" position="0 2.2 0"  material="src: #click">
-  <a-animation id="pulse0" attribute="rotation" repeat="indefinite" delay="0" dur="10000" easing="linear" from="0 0 0" to="0 180 0"></a-animation>
-  <a-animation id="bye" attribute="scale" begin="goodbye" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
-  <a-animation id="byebye" attribute="position" begin="goodbye" dur="500" from="0 2.2 0" to="0 -10 0"></a-animation>
-  <a-animation id="byebyebye" attribute="rotation" begin="goodbye" dur="300" from="0 0 0" to="0 360 0"></a-animation>
-</a-box>
--->
+  <a-cone id="cone" color="black" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="0 0 0" metalness=".7"
+  audioanalyser-volume-scale="analyserEl: #analyser"
+  ></a-cone>
 
-
-
-<!-- small, conic display stand below floating cube-->
-
-<!--
-  <a-cone id="cone" color="black" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="0 0 0" metalness=".3"></a-cone>
--->
 
 <!-- water for walls-->
-<a-ocean rotation="0, 0, 0" position="0 2.5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"></a-ocean>
-<a-ocean rotation="0, 180, 180" position="0 2.5 10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"></a-ocean>
+<a-ocean rotation="0, 0, 0" position="0 2.5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"
+  ></a-ocean>
+<a-ocean rotation="0, 180, 180" position="0 2.5 10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"
+  ></a-ocean>
 
 <a-ocean rotation="0 270 0" position="10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
 <a-ocean rotation="0 90 180" position="-10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
@@ -179,9 +123,7 @@ AFRAME.registerComponent('click-you', {
   <a-plane rotation="-90 0 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane>
 
 <!-- ceiling -->
-<!--  <a-plane rotation="-270 0 0" position="0 15 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane> -->
   <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
-
 
 <!-- light-->
 
@@ -192,53 +134,6 @@ AFRAME.registerComponent('click-you', {
  <a-sky id="sky1" color="#e95d44" ></a-sky>
 
 </a-scene>
-
-
-
-<!--
-
-<script>
-var scene = document.querySelector('a-scene');
-if (scene.hasLoaded) {
-  run();
-} else {
-  scene.addEventListener('loaded', run);
-}
-function run () {
-  var scene = document.querySelector('a-scene');
-  var blank = document.querySelector('#blank');
-  var boxy = document.querySelector('#boxy');
-
-window.addEventListener('touchend', blank.play());
-
-  setTimeout(function() {
-window.addEventListener('touchend', run2);}, 500);
-scene.removeEventListener('loaded', run);
-}
-function run2 () {
-
-var boxy = document.querySelector('#boxy');
-boxy.emit('cursor-click');
-window.removeEventListener('touchend', run2);
-window.removeEventListener('touchend', blank.play());
-
-
-var docElm = document.documentElement;
-if (docElm.requestFullscreen) {
-    docElm.requestFullscreen();
-}
-else if (docElm.mozRequestFullScreen) {
-    docElm.mozRequestFullScreen();
-}
-else if (docElm.webkitRequestFullScreen) {
-    docElm.webkitRequestFullScreen();
-}
-else if (docElm.msRequestFullscreen) {
-    docElm.msRequestFullscreen();
-}
-}
-</script>
--->
 
   </body>
 </html>

@@ -43,7 +43,8 @@ module.exports.Primitive = {
     depth: 'ocean.depth',
     density: 'ocean.density',
     color: 'ocean.color',
-    opacity: 'ocean.opacity'
+    opacity: 'ocean.opacity',
+    amplitude: 'ocean.amplitude'
   }
 };
 

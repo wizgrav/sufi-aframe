@@ -12,6 +12,7 @@
 
 <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
 
+<script src="components/aframe-fence-component.js"></script>
 <script src="components/aframe-animation-component.js"></script>
 <script src="components/aframe-ui-components.js"></script>
 <script src="components/aframe-audioanalyser-component.js"></script>
@@ -53,6 +54,10 @@ AFRAME.registerComponent('cursor-listener', {
     <img id="click" src="assets/click2.png">
     <img id="pala" src="assets/palav2.png">
     <img id="texture" src="assets/texturec2.png">
+<!--    <img id="dotty" src="assets/dots.png"> -->
+    <a-mixin id="wallyA" material="src: #pala; opacity: 1"
+     audioanalyser-volume-scale="multiplier: .05; analyserEl: #analyser">
+    <a-mixin id="sides" material="src: #pala;">
     </a-assets>
 
 
@@ -60,13 +65,16 @@ AFRAME.registerComponent('cursor-listener', {
 <!--<a-camera id="camera" universal-controls position="0 1.8 5" fence="width: 16; depth: 14; x0: 0; z0: 0">
 -->
 
-<a-camera id="camera" position="0 5 3"> <!--universal-controls--> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
+<a-camera id="camera" position="0 5 3" fence="width: 19.8; depth: 19; x0: 0; z0: 0"> <!--universal-controls--> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
 <!--          <a-cursor id="curse"
           fuse="false"
           objects="[data-interactive='true']"
           cursor-feedback>
         </a-cursor>  -->
       </a-camera>
+
+
+
 
 <!-- sounds in space -->
 
@@ -101,18 +109,26 @@ AFRAME.registerComponent('cursor-listener', {
 -->
 
 <!-- water for walls-->
-<a-ocean rotation="0, 0, 0" position="0 -5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: 1"
- audioanalyser-volume-scale="multiplier: .05; analyserEl: #analyser"
+<a-ocean rotation="0, 0, 0" position="0 -5 -10" width="22" depth="50" density="40"  mixin="wallyA"
   ></a-ocean>
-<a-ocean rotation="0, 180, 180" position="0 -5 10" width="22" depth="50" density="40" material="src: #pala; opacity: 1"
- audioanalyser-volume-scale="multiplier: .05; analyserEl: #analyser"
+<a-ocean rotation="0, 180, 180" position="0 -5 10" width="22" depth="50" density="40"  mixin="wallyA"
   ></a-ocean>
 
+<!--
 <a-ocean rotation="0 270 0" position="10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
 <a-ocean rotation="0 90 180" position="-10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
+-->
+
+<a-plane mixin="sides" width="20" height="20" rotation="0 270 0" position="10 10 0" ></a-plane>
+<a-plane mixin="sides" width="20" height="20" rotation="0 90 180" position="-10 10 0"></a-plane>
+
+<a-plane  width="20" height="20" rotation="0 270 0" position="9.75 10 0" material="color: yellow; opacity: .1"></a-plane>
+<a-plane  width="20" height="20" rotation="0 90 180" position="-9.75 10 0" material="color: yellow; opacity: .1"></a-plane>
+
+
 
 <!-- floor-->
-  <a-plane rotation="-90 0 0" position="0 0 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane>
+  <a-plane rotation="-90 0 0" position="0 0 0" width="20" height="20" material="src: #texture; repeat: 100 20;"></a-plane>
 
 <!-- ceiling -->
 <!--  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>-->

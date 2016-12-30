@@ -1,22 +1,942 @@
 
 
-Check out buggy audio initializing!
+[may be able to do this with autoplay......... maybe?]
+[need to create CSS intro screen or something]
+[need to ensure autoplay lines up with start of scene tho?]
 
 
-A. Try out Kevin's Audio Viz examples exactly as they are.
-B. Try using them on a basic scene. 
-C. Try them on cone in sufi viz.
-D. Try them on walls [modify amplitude for Ocean]
-E. If they don't work, use the analyzer from CurtViz and use Kevin's examples for ideas
+touch/click/raycast/gamepad interactions---
+*warp the walls via touch
+[may need to map the normals?]
+[may want to turn off ocean shader on 2 walls, 
+leave them flat, touch them to activate]
 
 
-Minimum Viable Product:
-1 decent audio viz interaction
-1 decent click/touch/raycaster interaction 
+AFRAME.registerComponent('example-mesh', {
+  init: function () {
+    var el = this.el;
+    el.getOrCreateObject3D('mesh', THREE.Mesh);
+    el.getObject3D('mesh');  // Returns THREE.Mesh that was just created.
+  }
+});
 
 
+
+
+
+
+buffer:	
+Transform geometry into a BufferGeometry to reduce memory usage at the cost of being harder to manipulate.	
+(default: true)
+
+mergeTo:	
+A selector to an entity to merge the entity’s geometry to.	
+(default: None)
+
+primitive: 
+Name of a geometry. Determines the geometry type and what other properties are available.
+(default: box)
+
+skipCache: 
+Disable retrieving the shared geometry object from the cache.	
+(default: false)
+
+
+
+
+----
+AFRAME.registerGeometry('box', {
+  schema: {
+    depth: {default: 1, min: 0},
+    height: {default: 1, min: 0},
+    width: {default: 1, min: 0},
+    segmentsHeight: {default: 1, min: 1, max: 20, type: 'int'},
+    segmentsWidth: {default: 1, min: 1, max: 20, type: 'int'},
+    segmentsDepth: {default: 1, min: 1, max: 20, type: 'int'}
+  },
+  init: function (data) {
+    this.geometry = new THREE.BoxGeometry(data.width, data.height, data.depth);
+  }
+});
+
+----
+AFRAME.registerGeometry('example', {
+  schema: {
+    vertices: {
+      default: ['-10 10 0', '-10 -10 0', '10 -10 0'],
+    }
+  },
+  init: function (data) {
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push.call(
+      geometry.vertices,
+      data.vertices.map(function (vertex) {
+        var points = vertex.split(' ').map(parseInt);
+        return new THREE.Vector3(points[0], points[1], points[2]);
+      });
+    );
+    geometry.faces.push(new THREE.Face3(0, 1, 2));
+    this.geometry = geometry;
+  }
+});
+
+HTML:
+
+<a-entity geometry="primitive: example; vertices: 1 1 1, 2 2 2, 3 3 3"></a-entity>
+-------
+
+THREE
+https://threejs.org/docs/#Reference/Core/Geometry
+
+--------
+
+THREE.SubdivisionModifier
+
+THREE.SceneUtils.createMultiMaterialObject( Geometry.clone(); )
+
+---
+
+THREE.PlaneGeometry(1000, 1000, 10, 10);
+
+
+---
+
+
+var crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
+	
+
+---
+
+// this material causes a mesh to use colors assigned to vertices
+	//   different colors at face vertices create gradient effect
+	var cubeMaterial = new THREE.MeshBasicMaterial( 
+	{ color: 0xffffff, vertexColors: THREE.VertexColors } );
+	
+	var color, face, numberOfSides, vertexIndex;
+	
+	// faces are indexed using characters
+	var faceIndices = [ 'a', 'b', 'c', 'd' ];
+	
+	// randomly color cube
+	var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
+	for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	{
+		face  = cubeGeometry.faces[ i ];	
+		// determine if current face is a tri or a quad
+		numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+		// assign color to each vertex of current face
+		for( var j = 0; j < numberOfSides; j++ ) 
+		{
+			vertexIndex = face[ faceIndices[ j ] ];
+			// initialize color variable
+			color = new THREE.Color( 0xffffff );
+			color.setHex( Math.random() * 0xffffff );
+			face.vertexColors[ j ] = color;
+		}
+	}
+	cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
+
+---------
+
+
+
+
+http://lab.aerotwist.com/webgl/surface/js/Surface.js
+
+
+	function createObjects()
+	{
+		var planeMaterial 		= new THREE.MeshLambertMaterial({color: 0xFFFFFF, map: ImageUtils.loadTexture("images/72lions_sterik.jpg"), shading: THREE.SmoothShading}),
+			planeMaterialWire 	= new THREE.MeshLambertMaterial({color: 0xFFFFFF, wireframe:true});
+		
+		surface 				= new THREE.Mesh(new Plane(SURFACE_WIDTH, SURFACE_HEIGHT, X_RESOLUTION, Y_RESOLUTION), [planeMaterial, planeMaterialWire]);
+		surface.rotation.x 		= -Math.PI * .5;
+		surface.overdraw		= true;
+		scene.addChild(surface);
+		
+		// go through each vertex
+		surfaceVerts 	= surface.geometry.vertices;
+		sCount			= surfaceVerts.length;
+		
+		// three.js creates the verts for the
+		// mesh in x,y,z order I think
+		while(sCount--)
+		{
+			var vertex 		= surfaceVerts[sCount];
+			vertex.springs 	= [];
+			vertex.velocity = new THREE.Vector3();
+			
+			// connect this vertex to the ones around it
+			if(vertex.position.x > (-SURFACE_WIDTH * .5))
+			{
+				// connect to left
+				vertex.springs.push({start:sCount, end:sCount-1});
+			}
+			
+			if(vertex.position.x < (SURFACE_WIDTH * .5))
+			{
+				// connect to right
+				vertex.springs.push({start:sCount, end:sCount+1});
+			}
+			
+			if(vertex.position.y < (SURFACE_HEIGHT * .5))
+			{
+				// connect above
+				vertex.springs.push({start:sCount, end:sCount-(X_RESOLUTION+1)});
+			}
+
+			if(vertex.position.y > (-SURFACE_HEIGHT * .5))
+			{
+				// connect below
+				vertex.springs.push({start:sCount, end:sCount+(X_RESOLUTION+1)});
+			}
+		}
+	}
+	
+--
+		// click handler
+		$(document.body).mousedown(callbacks.mouseDown);
+		$(document.body).mouseup(callbacks.mouseUp);
+		$(document.body).click(callbacks.mouseClick);
+
+----
+
+function updatePlane()
+	{
+		var ratio				= 1 / Math.max(image.width/SURFACE_WIDTH, image.height/SURFACE_HEIGHT);
+		var scaledWidth			= image.width * ratio;
+		var scaledHeight		= image.height * ratio;
+		context.drawImage(image,
+							0,0,image.width,image.height,
+							(SURFACE_WIDTH - scaledWidth) * .5, (SURFACE_HEIGHT - scaledHeight) *.5, scaledWidth, scaledHeight);
+	
+		var newPlaneMaterial 	= new THREE.MeshLambertMaterial({color: 0xFFFFFF, map: ImageUtils.loadTexture(canvas.toDataURL("image/png")), shading: THREE.SmoothShading});
+		surface.materials[0] 	= newPlaneMaterial;
+	}
+	
+---
+
+
+		surface.materials[1].opacity = vars["wireframeOpacity"];
+		
+		var v = surfaceVerts.length;
+		while(v--) {
+			var vertex			= surfaceVerts[v],
+				acceleration 	= new THREE.Vector3(0, 0, -vertex.position.z * vars["elasticity"]),
+				springs			= vertex.springs,
+				s				= springs.length;
+			
+			vertex.velocity.addSelf(acceleration);
+			
+			while(s--) {
+				var spring 		= springs[s],
+					extension	= surfaceVerts[spring.start].position.z - surfaceVerts[spring.end].position.z;
+				
+				acceleration 	= new THREE.Vector3(0, 0, extension * vars["elasticity"] * 50);
+				surfaceVerts[spring.end].velocity.addSelf(acceleration);
+				surfaceVerts[spring.start].velocity.subSelf(acceleration);
+			}
+
+			vertex.position.addSelf(vertex.velocity);
+			
+			vertex.velocity.multiplyScalar(DAMPEN);
+		}
+		
+		surface.geometry.computeFaceNormals(true);
+		surface.geometry.__dirtyVertices = true;
+		surface.geometry.__dirtyNormals = true;
+		
+		// set up a request for a render
+		requestAnimationFrame(render);
+	}
+---
+
+
+	/**
+	 * Renders the current state
+	 */
+	function render()
+	{
+		// only render
+		if(renderer) {
+			renderer.render(scene, camera);
+		}
+		
+		// set up the next frame
+		if(running) {
+			update();
+		}
+	}
+	
+	function disturbSurface(event, magnitude)
+	{
+		if(running) {
+			var mouseX	= event.offsetX || (event.clientX - 220);
+			var mouseY	= event.offsetY || event.clientY;
+			
+			var vector 	= new THREE.Vector3((mouseX / width) * 2 - 1, -(mouseY / height) * 2 + 1, 0.5);
+			projector.unprojectVector(vector, camera);
+			
+			var ray 		= new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize()),
+				intersects	= ray.intersectObject(surface);
+			
+			// if the ray intersects with the
+			// surface work out where
+			if(intersects.length) {
+				var iPoint 	= intersects[0].point,
+				 	xVal	= Math.floor((iPoint.x / SURFACE_WIDTH) * X_RESOLUTION),
+					yVal	= Math.floor((iPoint.z / SURFACE_HEIGHT) * Y_RESOLUTION);
+				
+				xVal 		+= X_RESOLUTION * .5;
+				yVal 		+= Y_RESOLUTION * .5;
+				
+				index		= (yVal * (X_RESOLUTION + 1)) + xVal;
+				
+				if(index >= 0 && index < surfaceVerts.length) {
+					surfaceVerts[index].velocity.z += magnitude;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Our internal callbacks object - a neat
+	 * and tidy way to organise the various
+	 * callbacks in operation.
+	 */
+	callbacks = {
+		mouseDown:function() {
+			document.addEventListener('mousemove', callbacks.mouseMove, false);
+		},
+		mouseMove:function(event) {
+			disturbSurface(event, vars["magnitude"]);
+		},
+		mouseClick: function(event) {
+			disturbSurface(event, vars["magnitude"] * 5);
+		},
+		mouseUp:function() {
+			document.removeEventListener('mousemove', callbacks.mouseMove, false);
+		},
+		guiClick:function() {
+			var $this 	= $(this),
+				varName	= $this.data("guivar"),
+				varVal	= $this.data("guival");
+			if(vars[varName] !== null) {
+				vars[varName] = varVal;
+			}
+			
+			$this.siblings().addClass('disabled');
+			$this.removeClass('disabled');
+			
+			return false;
+		},
+		windowResize: function() {
+			
+			if(camera)
+			{
+				width			= $container.width(),
+				height			= $container.height(),
+				camera.aspect 	= width / height,
+				renderer.setSize(width, height);
+			
+				camera.updateProjectionMatrix();
+			}
+		},
+		keyDown: function(event) {
+			
+			if(camera)
+			{
+				switch(event.keyCode)
+				{
+				case 37: // Left
+						orbitValue -= 0.1;
+						break;
+						
+				case 39: // Right
+						orbitValue += 0.1;
+						break;
+						
+				}
+				camera.update();
+			}
+		}
+	};
+};
+http://lab.aerotwist.com/webgl/surface/js/Surface.js
+
+------
+
+
+	// initialize object to perform world/screen calculations
+	projector = new THREE.Projector();
+	
+	// when the mouse moves, call the given function
+	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	
+}
+
+function onDocumentMouseDown( event ) 
+{
+	// the following line would stop any other event handler from firing
+	// (such as the mouse's TrackballControls)
+	// event.preventDefault();
+	
+	console.log("Click.");
+	
+	// update the mouse variable
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	
+	// find intersections
+
+	// create a Ray with origin at the mouse position
+	//   and direction into the scene (camera direction)
+	var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+	projector.unprojectVector( vector, camera );
+	var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+	// create an array containing all objects in the scene with which the ray intersects
+	var intersects = ray.intersectObjects( targetList );
+	
+	// if there is one (or more) intersections
+	if ( intersects.length > 0 )
+	{
+		console.log("Hit @ " + toString( intersects[0].point ) );
+		// change the color of the closest face.
+		intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
+		intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+	}
+
+}
+
+function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
+
+function animate() 
+{
+    requestAnimationFrame( animate );
+	render();		
+	update();
+}
+
+view-source:http://stemkoski.github.io/Three.js/Mouse-Click.html
+------
+
+var ballGeometry = new THREE.SphereGeometry( 60, 32, 16 );
+	
+	var ballTexture = new THREE.ImageUtils.loadTexture('images/uvgrid01.jpg');
+	
+	// use "this." to create global object
+	this.customUniforms = 
+	{
+		baseTexture: { type: "t", value: ballTexture },
+		mixAmount: 	 { type: "f", value: 0.0 }
+	};
+	
+	this.customAttributes = 
+	{
+		endPosition: { type: "v3", value: [] }
+	};
+	
+	// set values of attributes
+	var values = customAttributes.endPosition.value;
+	for ( var i = 0; i < ballGeometry.vertices.length; i++ ) 
+	{
+		var vec = ballGeometry.vertices[i];
+		values[i] = new THREE.Vector3( vec.x, 0, vec.z );
+	}
+	
+	// create custom material from the shader code above
+	//   that is within specially labeled script tags
+	var customMaterial = new THREE.ShaderMaterial( 
+	{
+	    uniforms: customUniforms,
+		attributes: customAttributes,
+		vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+		fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+	}   );
+	
+	var ball = new THREE.Mesh( ballGeometry, customMaterial );
+	ball.position.set(0, 65, 0);
+	scene.add( ball );
+}
+
+function animate() 
+{
+    requestAnimationFrame( animate );
+	render();		
+	update();
+}
+view-source:http://stemkoski.github.io/Three.js/Shader-Attributes.html
+
+---
+
+***********************
+Port THREE into A-Frame:
+
+<a-scene>.object3D gives you access to the THREE.Scene.
+
+Each <a-entity> has an object3D that is a group. 
+You use getObject3D() 
+and getOrCreateObject3D() 
+constructor to add things to the group.
+
+
+AFRAME.registerComponent('mythreejsthing', {
+  schema: {
+    // ... Define schema to pass properties from DOM to this component
+  },
+
+  init: function () {
+    var el = this.el;  // Entity.
+    var mythreejsobject = // ... Create three.js object.
+    el.setObject3D('mesh', mythreejsobject);
+  }
+});
+***********************
+
+---
+
+if wall broken into pieces....
+https://github.com/scenevr/selectable-component
+view-source:https://scenevr.github.io/selectable-component/basic/index.html
+
+---
+
+TRY THIS
+TRY THIS
+TRY THIS
+https://github.com/andreasplesch/aframe-faceset-component
+view-source:https://andreasplesch.github.io/aframe-faceset-component/advanced/index.html
+
+---
+
+t.setObject3D("mesh",e.model)
+
+.registerGeometry
+
+--
+
+for ( var i = 0, l = geometry.vertices.length; i < l; i ++ ) {
+					geometry.vertices[ i ].y = 35 * Math.sin( i / 2 );
+				}
+
+
+.........
+
+
+
+			function render() {
+				var delta = clock.getDelta(),
+					time = clock.getElapsedTime() * 10;
+				for ( var i = 0, l = geometry.vertices.length; i < l; i ++ ) {
+					geometry.vertices[ i ].y = 35 * Math.sin( i / 5 + ( time + i ) / 7 );
+				}
+				mesh.geometry.verticesNeedUpdate = true;
+				controls.update( delta );
+				renderer.render( scene, camera );
+
+--
+
+may require morph Targets???
+
+
+			function onMouseMove( e ) {
+				var mouseX = e.clientX,
+					mouseY = e.clientY;
+				// change morph weight: 0 at 1
+				// names from modifier Morph of 3ds Max
+				teapot.setWeight("OldTeapot", mouseX / window.innerWidth);
+				teapot.setWeight("Sphere", mouseY / window.innerHeight);
+
+---
+
+subdivider
+https://github.com/mrdoob/three.js/blob/master/examples/webgl_modifier_subdivision.html
+
+
+
+
+					'<br><br>Subdivisions: ' + subdivisions +
+					' <a href="#" onclick="nextSubdivision(1); return false;">more</a>/<a href="#" onclick="nextSubdivision(-1); return false;">less</a>' +
+					'<br>Geometry: ' + dropdown + ' <a href="#" onclick="nextGeometry();return false;">next</a>' +
+					'<br><br>Vertices count: before ' + geometry.vertices.length + ' after ' + (smooth.attributes.position.array.length/3) +
+					'<br>Face count: before ' + geometry.faces.length + ' after ' + (smooth.attributes.position.array.length / 3)
+
+---
+
+
+MULTI COLORED FACES ON A CUBE
+
+V1:
+
+
+
+We need to set the mesh.material.vertexColors = THREE.FaceColors;
+
+AFRAME.registerComponent('multicolored-cube', {
+  dependencies: ['geometry'],
+  init: function() {
+    var mesh = this.el.getObject3D('mesh');
+    var geom = mesh.geometry;
+    for (var i = 0; i < geom.faces.length; i++) {
+      var face = geom.faces[i]; 
+      face.color.setRGB(Math.random(), Math.random(), Math.random());
+    }
+    geom.colorsNeedUpdate = true;
+    mesh.material.vertexColors = THREE.FaceColors;
+  }
+});
+<a-scene>
+  <a-entity geometry="primitive: box; buffer: false" 
+            multicolored-cube position="0 1 -4" rotation="0 45 0"></a-entity>
+</a-scene>
+-----------------
+
+
+V2:
+
+
+
+<script>
+  AFRAME.registerComponent('multicolored-cube', {
+    init: function() {
+      var mesh = this.el.getObject3D('mesh');
+      var colors = this.data.colors.split(',');
+      var geom = mesh.geometry;
+      for (var i = 0; i < geom.faces.length; i++) {
+        var face = geom.faces[i];
+        face.color.setHex(colors[i]);
+      }
+      mesh.material.vertexColors = THREE.FaceColors;
+      this.el.setObject3D('mesh', mesh);
+    }
+  });
+</script>
+
+https://curiousbrickinthewall.wordpress.com/2016/08/18/a-frame-vr-on-web-made-super-easy/
+
+--
+
+define clickability!
+
+<a-entity raycaster="objects: .clickable" cursor></a-entity>
+<a-entity class="clickable" geometry="primitive: box" position="1 0 0"></a-entity>
+<a-entity class="not-clickable" geometry="primitive: sphere" position="-1 0 0"></a-entity>
+
+--
+
+
+cursor component: 
+mouseenter, mouseleave, click.
+
+
+also, triggerbox.
+
+
+---
+
+collider detection
+
+[THIS IS OLD]
+
+
+
+AFRAME.registerComponent('collider', {
+  schema: {
+    target: { default: '' }
+  },
+
+  /**
+   * Calculate targets.
+   */
+  init: function () {
+    var targetEls = this.el.sceneEl.querySelectorAll(this.data.target);
+    this.targets = [];
+    for (var i = 0; i < targetEls.length; i++) {
+      this.targets.push(targetEls[i].object3D);
+    }
+    this.el.object3D.updateMatrixWorld();
+  },
+
+  /**
+   * Check for collisions (for cylinder).
+   */
+  tick: function (t) {
+    var collisionResults;
+    var directionVector;
+    var el = this.el;
+    var sceneEl = el.sceneEl;
+    var mesh = el.getObject3D('mesh');
+    var object3D = el.object3D;
+    var raycaster;
+    var vertices = mesh.geometry.vertices;
+    var bottomVertex = vertices[0].clone();
+    var topVertex = vertices[vertices.length - 1].clone();
+
+    // Calculate absolute positions of start and end of entity.
+    bottomVertex.applyMatrix4(object3D.matrixWorld);
+    topVertex.applyMatrix4(object3D.matrixWorld);
+
+    // Direction vector from start to end of entity.
+    directionVector = topVertex.clone().sub(bottomVertex).normalize();
+
+    // Raycast for collision.
+    raycaster = new THREE.Raycaster(bottomVertex, directionVector, 1);
+    collisionResults = raycaster.intersectObjects(this.targets, true);
+    collisionResults.forEach(function (target) {
+      // Tell collided entity about the collision.
+      target.object.el.emit('collider-hit', {target: el});
+    });
+  }
+});
+Then we attach a class to the enemies to designate them as targets, attach animations that trigger on collision to make them disappear, and finally attach the collider component to the laser that targets enemies:
+
+<a-assets>
+  <img id="enemy-sprite" src="img/enemy.png">
+
+  <script id="enemies" type="text/x-nunjucks-template">
+    <a-entity layout="type: circle; radius: 5">
+      <a-animation attribute="rotation" dur="8000" easing="linear" repeat="indefinite" to="0 360 0"></a-animation>
+
+      {% for x in range(num) %}
+        <!-- Attach enemy class. -->
+        <a-image class="enemy" look-at="#player" src="#enemy-sprite" transparent="true">
+          <!-- Attach collision handler animations. -->
+          <a-animation attribute="opacity" begin="collider-hit" dur="400" ease="linear"
+                       from="1" to="0"></a-animation>
+          <a-animation attribute="scale" begin="collider-hit" dur="400" ease="linear"
+                       to="0 0 0"></a-animation>
+        </a-image>
+      {% endfor %}
+    </a-entity>
+  </script>
+
+  <!-- Attach collider that targets enemies. -->
+  <a-mixin id="laser" geometry="primitive: cylinder; radius: 0.05; translate: 0 -2 0"
+                      material="color: green; metalness: 0.2; opacity: 0.4; roughness: 0.3"
+                      projectile="speed: -0.5" collider="target: .enemy"></a-mixin>
+</a-assets>
+
+----
+
+alt. collision collider whatever
+https://github.com/dmarcos/a-invaders/blob/master/js/components/collider.js
+[see downloaded a-invaders zip]
+
+
+
+
+
+---
+
+...maybe use this?
+https://github.com/andreasplesch/aframe-heightgrid-component
+view-source:http://andreasplesch.github.io/aframe-heightgrid-component/advanced/index.html
+
+
+----
+
+
+maybe use Event Set from KFrame!
+
+https://github.com/ngokevin/kframe/tree/master/components/event-set
+
+
+---
+
+Crease material (could be too expensive)
+https://github.com/andreasplesch/aframe-crease-component
+view-source:https://andreasplesch.github.io/aframe-crease-component/basic/index.html
+
+---
+
+
+*****
+DISTORT THE NORMAL MAP 
+****
+[a-frame-components-0.0.1.zip]
+http://samsunginter.net/a-frame-components/
+
+
+https://github.com/SamsungInternet/a-frame-components/blob/v0.0.1/dist/webgl-ocean-shader.js
+
+https://medium.com/samsung-internet-dev/i-made-my-first-pr-to-a-frame-3675d596a2d8#.46u8w6y1a
+
+view-source:http://samsunginter.net/a-frame-demos/super-standard.html
+
+AFRAME.registerComponent('wobble-normal', {
+ schema: {},
+ tick: function (t) {
+  this.el.components.material.material.normalMap.offset.x += 0.0001 * Math.sin(t/10000);
+  this.el.components.material.material.normalMap.offset.y += 0.0001 * Math.cos(t/8000);
+  this.el.components.material.material.normalScale.x = 0.5 + 0.5 * Math.cos(t/1000);
+  this.el.components.material.material.normalScale.x = 0.5 + 0.5 * Math.sin(t/1200);
+ }
+})
+AFRAME.registerPrimitive('a-ocean-plane', {
+ defaultComponents: {
+  geometry: {
+   primitive: 'plane',
+   height: 10000,
+   width: 10000
+  },
+  rotation: '-90 0 0',
+  material: {
+   shader: 'super-standard',
+   color: '#8ab39f',
+   metalness: 1,
+   roughness: 0.2,
+   normalTextureRepeat: '50 50',
+   normalTextureOffset: '0 0',
+   normalScale: '0.5 0.5',
+   opacity: 0.8
+  },
+  'wobble-normal': {}
+ },
+});
+
+
+<a-ocean-plane material="normalMap: #water-normal; sphericalEnvMap: #night-sphere;" position="0 -2 0" ></a-ocean-plane>
+
+----
+
+check dist/fire-item.js too!
+
+----
+
+
+so so so satisfying:
+https://threejs.org/examples/webgl_shaders_ocean.html
+view-source:https://threejs.org/examples/webgl_shaders_ocean.html
+
+
+
+
+
+
+Minimum Desktop Viable Product:
+(check!)1 decent audio viz interaction
+(workin on it...)1 decent click/touch/raycaster interaction 
+
+
+
+
+use document click to begin?
+
+		// stop the user clicking
+		document.onselectstart		= function(){ return false; };
+
+
+
+camera motion via VR gamepad? 
+look into it on Daydream...
+[stack overflow aframe daydream question]
+
+
+[animate recurring mild glitch on side walls via transparency?
+potentially use Random to alter timing?]
+
+https://github.com/mayognaise/aframe-gif-shader
+
+
+
+MORE audio-vis to add:
+use beat detection to make the walls shrink?
+
+fade in the lights?
+fade in the sky waveform (via blocking it with black plane and slowly fading it)?
+
+add cones under stems, 
+attached to audio, 
+that scale via volume 
+
+[try analyzing different stems differently, 
+but probably just use one analyzer, 
+of the main song (muted/vol=0), 
+or of the combined sources]
+
+
+Maybe try a different use of waveform analyzer?
+or try to reshape the visuals to be more unique?
+
+---
+
+
+destroy walls!
+https://github.com/mrdoob/three.js/blob/master/examples/webgl_modifier_tessellation.html
+
+or more simply
+https://github.com/dmarcos/a-invaders/blob/master/js/components/explode.js
+[see downloaded a-invaders]
+
+
+--
+
+Terrain! 
+
+http://blog.mastermaps.com/2013/10/terrain-building-with-threejs-part-1.html
+
+      <a-entity terrain-model='DEM: url(data/clipped-envi.bin); texture: url(data/olympic-texture.jpg); planeWidth: 287; planeHeight: 151; segmentsWidth: 287; segmentsHeight: 151; zPosition: 50;'></a-entity>
+
+      <a-entity terrain-model='DEM: url(data/jotunheimen.bin); texture: url(data/jotunheimen-texture.jpg); planeWidth: 60; planeHeight: 60; segmentsWidth: 199; segmentsHeight: 199; zPosition: 5;'></a-entity>
+
+
+https://github.com/bryik/aframe-terrain-model-component
+
+https://bryik.github.io/aframe-terrain-model-component/Jotunheimen/
+
+just for reference:
+https://github.com/turban/webgl-terrain/blob/master/lib/TerrainLoader.js
+
+(use Ocean Shader 
+or use that ultra-real ThreeJS ocean sim)
+
+--
+
+
+head tracking?
+https://medium.com/humane-virtuality/head-tracked-transformations-e7102d3c9789#.mu3jkr3ds
+
+
+
+--
+
+MOBILE version: 
+
+can probably stay in AFrame 
+or ThreeJS if necessary
+
+use one water wall, 
+no motion controls, 
+no positional audio, 
+but "click to start" is necessary
+
+
+****
+if all else fails, 
+you can record the audio-reactive visuals, 
+stream them on a canvas, 
+video-as-texture, 
+and make them interactive via P5
+****
+
+possibly it eventually fades into the actual ocean
+
+
+
+--
+use geometry merging for "shared materials" to save gpu
+https://aframe.io/docs/0.4.0/components/geometry.html#mergeto
+
+
+-----
 
 [check the aframe stuff open on phone... more *fluid* ideas?
 if not, that's ok!!!!!]
 
 [ways to incorporate Hawaii? Pala Pala inspo?]
+
+
+
+watch ur old CurtViz once, 
+just to see if there are things you can add from it

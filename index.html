@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pala Pala</title>
+    <meta name="description" content="Music And Motion">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+<!--    <link rel="stylesheet"  type="text/css" href="css/style.css"/> -->
+
+<script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+
+<script src="components/aframe-animation-component.js"></script>
+<!--<script src="components/aframe-clubber.js"></script>-->
+<script src="components/aframe-extras.controls.js"></script>
+<script src="components/aframe-extras.primitives.js"></script>
+<script src="components/aframe-extras.shadows.js"></script>
+<script src="components/aframe-fit-texture-component.js"></script>
+
+
+
+
+<!--
+<script src="shaders/FilmShader.js"></script>
+<script src="shaders/FXAAShader.js"></script>
+<script src="components/film-grain.js"></script>
+<script src="components/fxaa.js"></script>
+<script src="components/compositor.js"></script>
+-->
+
+
+<!--    <script src="adev/aframe.min.js"></script>
+    <script src="js/aframe-extras.controls.min.js"></script>
+    <script src="js/aframe-fence-component.min.js"></script>
+-->
+
+
+
+<!--       <script src="js/aframe-asset-layz-load.min.js"></script> -->
+
+<!--    <script src="components/noise.js"></script> -->
+
+    <!--    <script src="shaders/FilmShader.js"></script>
+    <script src="shaders/FXAAShader.js"></script>
+    <script src="components/fxaa.js"></script>
+    <script src="components/film-grain.js"></script>
+    <script src="components/compositor.js"></script> -->
+    <!-- unsure if extra MATHS is necessary -->
+    <!-- <script src="extras/aframe-extras.math.js"></script> -->
+
+    <!-- livereload ~/SufiPlayer/sufi-aframe -p 8000 -->
+
+  </head>
+  <body>
+
+<!--
+<script>
+AFRAME.registerShader('line-dashed', {
+  schema: {
+    dashSize: {default: 3},
+    lineWidth: {default: 1}
+  },
+  /**
+   * `init` used to initialize material. Called once.
+   */
+  init: function (data) {
+    this.material = new THREE.LineDashedMaterial(data);
+    this.update(data);  // `update()` currently not called after `init`. (#1834)
+  },
+  /**
+   * `update` used to update the material. Called on initialization and when data updates.
+   */
+  update: function (data) {
+    this.material.dashsize = data.dashsize;
+    this.material.linewidth = data.linewidth;
+  }
+});
+</script>
+-->
+
+<a-scene>
+
+  <!--debug post-processing="true" compositor="film-grain fxaa" film-grain="grayscale: true; speed: 0.5;" fxaa=""-->
+
+  <!--fog="type: linear; color: #000; far: 40; near: 2"> -->
+<!-- post-processing="true" compositor="film-grain fxaa" fxaa="" film-grain="grayscale: false; speed: .8; sIntensity: 0.015; nIntensity: 0.10" -->
+
+<!--Load audio and visual assets. -->
+
+    <a-assets>
+    <audio id="blank" src="assets/blank.mp3" preload="auto">
+    <img id="click" src="assets/click2.png">
+    <img id="pala" src="assets/pala1.png">
+    <img id="texture" src="assets/texture2.png">
+    <mixin id="halo1" color="white" metalness=".5">
+    </a-assets>
+
+
+<!--Create player's position and controls via "camera." Add a "fence" to prevent walking through walls.-->
+<!--<a-camera id="camera" universal-controls position="0 1.8 5" fence="width: 16; depth: 14; x0: 0; z0: 0">
+-->
+
+<a-camera id="camera" position="0 1.8 5" universal-controls> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
+
+<!--          <a-entity id="curse" cursor="fuse: false; maxDistance: 3; timeout: 10"
+            position="0 0.3 -2" geometry="primitive: ring; radiusOuter: 0.04;
+                          radiusInner: 0.02;"
+            material="color: white; shader: flat; opacity: 0.04;">
+          </a-entity>
+          <a-entity raycaster="objects: .clickable" position="0 0.3 -2">
+-->
+      </a-camera>
+
+<!-- sounds in space -->
+
+<!--
+      <a-entity id="saxor" sound="src: citizen/m-sax.mp3; volume:1; on:gogo"  position="0 2.2 0">
+      </a-entity>
+-->
+
+
+<!--  click to begin  -->
+<!--
+<a-box id="boxy" click-color-change height="2" width="2" depth="2" metalness=".3" ease-in-out="Quad" position="0 2.2 0"  material="src: #click">
+  <a-animation id="pulse0" attribute="rotation" repeat="indefinite" delay="0" dur="10000" easing="linear" from="0 0 0" to="0 180 0"></a-animation>
+  <a-animation id="bye" attribute="scale" begin="goodbye" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
+  <a-animation id="byebye" attribute="position" begin="goodbye" dur="500" from="0 2.2 0" to="0 -10 0"></a-animation>
+  <a-animation id="byebyebye" attribute="rotation" begin="goodbye" dur="300" from="0 0 0" to="0 360 0"></a-animation>
+</a-box>
+-->
+
+
+
+<!-- small, conic display stand below floating cube-->
+
+<!--
+  <a-cone id="cone" color="black" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="0 0 0" metalness=".3"></a-cone>
+-->
+
+<!-- water for walls-->
+<a-ocean rotation="0, 0, 0" position="0 2.5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"></a-ocean>
+<a-ocean rotation="0, 180, 180" position="0 2.5 10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"></a-ocean>
+
+<a-ocean rotation="0 270 0" position="10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9; color: 0xe95d44"></a-ocean>
+<a-ocean rotation="0 90 180" position="-10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9; color: 0xe95d44"></a-ocean>
+
+<!-- floor-->
+  <a-plane rotation="-90 0 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane>
+
+<!-- ceiling -->
+<!--  <a-plane rotation="-270 0 0" position="0 15 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane> -->
+  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9; color: 0xe95d44"></a-ocean>
+
+
+<!-- light-->
+
+<a-light type="directional" color="#fff" intensity="0.2" position="0 15 0"></a-light>
+<a-light type="ambient" color="#fff"></a-light>
+
+<!-- sky-->
+ <a-sky id="sky1" color="#e95d44" ></a-sky>
+
+</a-scene>
+
+
+
+<!--
+
+<script>
+var scene = document.querySelector('a-scene');
+if (scene.hasLoaded) {
+  run();
+} else {
+  scene.addEventListener('loaded', run);
+}
+function run () {
+  var scene = document.querySelector('a-scene');
+  var blank = document.querySelector('#blank');
+  var boxy = document.querySelector('#boxy');
+
+window.addEventListener('touchend', blank.play());
+
+  setTimeout(function() {
+window.addEventListener('touchend', run2);}, 500);
+scene.removeEventListener('loaded', run);
+}
+function run2 () {
+
+var boxy = document.querySelector('#boxy');
+boxy.emit('cursor-click');
+window.removeEventListener('touchend', run2);
+window.removeEventListener('touchend', blank.play());
+
+
+var docElm = document.documentElement;
+if (docElm.requestFullscreen) {
+    docElm.requestFullscreen();
+}
+else if (docElm.mozRequestFullScreen) {
+    docElm.mozRequestFullScreen();
+}
+else if (docElm.webkitRequestFullScreen) {
+    docElm.webkitRequestFullScreen();
+}
+else if (docElm.msRequestFullscreen) {
+    docElm.msRequestFullscreen();
+}
+}
+</script>
+-->
+
+  </body>
+</html>

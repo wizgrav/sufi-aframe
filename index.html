@@ -12,7 +12,8 @@
 <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
 
 <script src="components/aframe-animation-component.js"></script>
-<!--<script src="components/aframe-clubber.js"></script>-->
+<script src="components/aframe-ui-components.js"></script>
+<script src="components/aframe-audioanalyzer-component.js"></script>
 <script src="components/aframe-extras.controls.js"></script>
 <script src="components/aframe-extras.primitives.js"></script>
 <script src="components/aframe-extras.shadows.js"></script>
@@ -54,42 +55,64 @@
   </head>
   <body>
 
+
+<script>
+// Component to change to random color on click.
+AFRAME.registerComponent('cursor-listener', {
+  init: function () {
+    this.el.addEventListener('animationend', function (evt) {
+      document.querySelector('#curse').setAttribute('visible', false);
+      document.querySelector('#lighty').setAttribute('visible', false);
+      document.querySelector('#dat1').components.sound.playSound();
+    });
+  }
+});
+</script>
+
+
 <!--
 <script>
-AFRAME.registerShader('line-dashed', {
+AFRAME.registerComponent('clicky', {
   schema: {
-    dashSize: {default: 3},
-    lineWidth: {default: 1}
+    name: {default: 'em'}
   },
-  /**
-   * `init` used to initialize material. Called once.
-   */
-  init: function (data) {
-    this.material = new THREE.LineDashedMaterial(data);
-    this.update(data);  // `update()` currently not called after `init`. (#1834)
+  init: function () {
+    var data = this.data;
+    this.el.addEventListener('click', function () {
+      this.emit(data.name);
+    });
+  }
+});
+
+AFRAME.registerComponent('click-you', {
+  schema: {
+    send: {}
   },
-  /**
-   * `update` used to update the material. Called on initialization and when data updates.
-   */
-  update: function (data) {
-    this.material.dashsize = data.dashsize;
-    this.material.linewidth = data.linewidth;
+  init: function () {
+    var data = this.data;
+    this.el.addEventListener('click', function () {
+      document.querySelector('#curse').emit(data.send);
+      document.querySelector('#hihi').emit(data.send);
+      document.querySelector('#bye').emit(data.send);
+    });
   }
 });
 </script>
 -->
 
-<a-scene>
+
+
+
+<a-scene antialias="true">
 
   <!--debug post-processing="true" compositor="film-grain fxaa" film-grain="grayscale: true; speed: 0.5;" fxaa=""-->
-
   <!--fog="type: linear; color: #000; far: 40; near: 2"> -->
 <!-- post-processing="true" compositor="film-grain fxaa" fxaa="" film-grain="grayscale: false; speed: .8; sIntensity: 0.015; nIntensity: 0.10" -->
 
 <!--Load audio and visual assets. -->
 
-    <a-assets>
-    <audio id="blank" src="assets/blank.mp3" preload="auto">
+    <a-assets timeout="3000">
+    <audio id="datura" src="assets/datura.mp3" preload="auto">
     <img id="click" src="assets/click2.png">
     <img id="pala" src="assets/pala1.png">
     <img id="texture" src="assets/texture2.png">
@@ -101,23 +124,30 @@ AFRAME.registerShader('line-dashed', {
 <!--<a-camera id="camera" universal-controls position="0 1.8 5" fence="width: 16; depth: 14; x0: 0; z0: 0">
 -->
 
-<a-camera id="camera" position="0 1.8 5" universal-controls> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
-
-<!--          <a-entity id="curse" cursor="fuse: false; maxDistance: 3; timeout: 10"
-            position="0 0.3 -2" geometry="primitive: ring; radiusOuter: 0.04;
-                          radiusInner: 0.02;"
-            material="color: white; shader: flat; opacity: 0.04;">
-          </a-entity>
-          <a-entity raycaster="objects: .clickable" position="0 0.3 -2">
--->
+<a-camera id="camera" position="0 1.8 5"> <!--universal-controls--> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
+          <a-cursor id="curse"
+          fuse="false"
+          objects="[data-interactive='true']"
+          cursor-feedback>
+          </a-cursor>
       </a-camera>
+
+
+      <!--<a-animation id="curse-go" attribute="visible" to="false" fill="forward" begin="gobye">-->
+
 
 <!-- sounds in space -->
 
-<!--
-      <a-entity id="saxor" sound="src: citizen/m-sax.mp3; volume:1; on:gogo"  position="0 2.2 0">
-      </a-entity>
--->
+
+<a-entity id="dat1" cursor-listener geometry="primitive: sphere;" material="color: #3d8b75" metalness="1" position="0 4 0"
+ animation="property: geometry.radius; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: .5 1 .5"
+ animation__color="property: material.color; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: #365"
+ data-interactive="true"
+          sound="src: assets/datura.mp3" > <!-- click-you="send: gobye" -->
+          <a-animation cursor-listener id="bye" attribute="scale" begin="click" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
+        </a-entity>
+
+
 
 
 <!--  click to begin  -->
@@ -142,20 +172,20 @@ AFRAME.registerShader('line-dashed', {
 <a-ocean rotation="0, 0, 0" position="0 2.5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"></a-ocean>
 <a-ocean rotation="0, 180, 180" position="0 2.5 10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"></a-ocean>
 
-<a-ocean rotation="0 270 0" position="10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9; color: 0xe95d44"></a-ocean>
-<a-ocean rotation="0 90 180" position="-10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9; color: 0xe95d44"></a-ocean>
+<a-ocean rotation="0 270 0" position="10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
+<a-ocean rotation="0 90 180" position="-10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
 
 <!-- floor-->
   <a-plane rotation="-90 0 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane>
 
 <!-- ceiling -->
 <!--  <a-plane rotation="-270 0 0" position="0 15 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane> -->
-  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9; color: 0xe95d44"></a-ocean>
+  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
 
 
 <!-- light-->
 
-<a-light type="directional" color="#fff" intensity="0.2" position="0 15 0"></a-light>
+<a-light id="lighty" type="directional" color="#fff" intensity="0.5" position="0 6 0"></a-light>
 <a-light type="ambient" color="#fff"></a-light>
 
 <!-- sky-->

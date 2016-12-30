@@ -17,13 +17,18 @@
 <script src="components/aframe-audioanalyser-component.js"></script>
 <script src="components/aframe-extras.controls.js"></script>
 <script src="components/aframe-extras.primitives.js"></script>
-<script src="components/aframe-fit-texture-component.js"></script>
+<script src="js/audioanalyser-waveform.js"></script>
+<script src="js/audioanalyser-volume-scale.js"></script>
+
+<!--<script src="components/aframe-fit-texture-component.js"></script> -->
+
 
     <!-- livereload ~/SufiPlayer/sufi-aframe -p 8000 -->
 
   </head>
   <body>
 
+<!--
 <script>
 // Component to change to execute multiple actions on click.
 AFRAME.registerComponent('cursor-listener', {
@@ -35,42 +40,19 @@ AFRAME.registerComponent('cursor-listener', {
     });
   }
 });
-
-// Specifically analyze overall volume
-AFRAME.registerComponent('audioanalyser-volume-scale', {
-  schema: {
-    analyserEl: {type: 'selector'},
-  },
-
-  tick: function () {
-    var analyserEl = this.data.analyserEl || this.el;
-    var analyserComponent;
-    var el = this.el;
-    var volume;
-
-    analyserComponent = analyserEl.components.audioanalyser;
-    if (!analyserComponent.analyser) { return; }
-    volume = analyserComponent.volume * .008;
-    el.setAttribute('scale', {
-      x: volume,
-      y: volume,
-      z: volume
-    });
-  }
-});
-
 </script>
+-->
 
-<a-scene antialias="true">
+
+<a-scene stats antialias="true">
 
 <!--Load audio and visual assets. -->
 
     <a-assets timeout="3000">
-    <audio id="datura" src="assets/datura.mp3" preload="auto">
+    <audio id="datura" src="assets/datura.mp3" preload="auto" autoplay>
     <img id="click" src="assets/click2.png">
-    <img id="pala" src="assets/pala1.png">
-    <img id="texture" src="assets/texture2.png">
-    <mixin id="halo1" color="white" metalness=".5">
+    <img id="pala" src="assets/palav2.png">
+    <img id="texture" src="assets/texturec2.png">
     </a-assets>
 
 
@@ -78,60 +60,74 @@ AFRAME.registerComponent('audioanalyser-volume-scale', {
 <!--<a-camera id="camera" universal-controls position="0 1.8 5" fence="width: 16; depth: 14; x0: 0; z0: 0">
 -->
 
-<a-camera id="camera" position="0 1.8 5"> <!--universal-controls--> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
-          <a-cursor id="curse"
+<a-camera id="camera" position="0 5 3"> <!--universal-controls--> <!-- fence="width: 16; depth: 14; x0: 0; z0: 0"> -->
+<!--          <a-cursor id="curse"
           fuse="false"
           objects="[data-interactive='true']"
           cursor-feedback>
-          </a-cursor>
+        </a-cursor>  -->
       </a-camera>
 
 <!-- sounds in space -->
 
-
+<!--
 <a-entity id="pulser" cursor-listener geometry="primitive: sphere;" material="color: #3d8b75" metalness="1" position="0 4 0"
  animation="property: geometry.radius; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: .5 1 .5"
  animation__color="property: material.color; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: #365"
  data-interactive="true">
           <a-animation cursor-listener id="bye" attribute="scale" begin="click" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
-        </a-entity>
+        </a-entity> -->
 
-<a-entity id="dat1" sound="src: assets/datura.mp3;" position="0 3 0">
+<a-entity id="dat1" sound="src: assets/datura.mp3;" position="0 3 0"
 </a-entity>
 
-<a-entity id="analyser" position="0 3 0"
- audioanalyser="src: #datura; enableBeatDetection: false; enableWaveform: false">
+<a-entity id="analyser"
+ audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
+ audioanalyser-waveform="radius: .25; maxHeight: .9"
+ rotation="90 0 0"
+ position="0 22 0"
+>
 </a-entity>
+
 
 <!-- small, conic display stand below floating sphere-->
 
+<!--
   <a-cone id="cone" color="black" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="0 0 0" metalness=".7"
-  audioanalyser-volume-scale="analyserEl: #analyser"
-  ></a-cone>
-
+  side="double"
+  shader="flat"
+  ></a-cone> -->
+<!--  audioanalyser="src: #datura; enableBeatDetection: false; enableWaveform: false">
+-->
 
 <!-- water for walls-->
-<a-ocean rotation="0, 0, 0" position="0 2.5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"
+<a-ocean rotation="0, 0, 0" position="0 -5 -10" width="22" depth="50" density="40" material="src: #pala; opacity: 1"
+ audioanalyser-volume-scale="multiplier: .05; analyserEl: #analyser"
   ></a-ocean>
-<a-ocean rotation="0, 180, 180" position="0 2.5 10" width="22" depth="50" density="40" material="src: #pala; opacity: .9"
+<a-ocean rotation="0, 180, 180" position="0 -5 10" width="22" depth="50" density="40" material="src: #pala; opacity: 1"
+ audioanalyser-volume-scale="multiplier: .05; analyserEl: #analyser"
   ></a-ocean>
 
-<a-ocean rotation="0 270 0" position="10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
-<a-ocean rotation="0 90 180" position="-10 2.5 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
+<a-ocean rotation="0 270 0" position="10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
+<a-ocean rotation="0 90 180" position="-10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
 
 <!-- floor-->
-  <a-plane rotation="-90 0 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane>
+  <a-plane rotation="-90 0 0" position="0 0 0" width="20" height="20" material="src: #texture; repeat: 100 20" metalness=".3"></a-plane>
 
 <!-- ceiling -->
-  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>
+<!--  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>-->
 
 <!-- light-->
 
-<a-light id="lighty" type="directional" color="#fff" intensity="0.5" position="0 6 0"></a-light>
+<!--<a-light id="lighty" type="directional" color="#fff" intensity="0.5" position="0 6 0"></a-light>-->
 <a-light type="ambient" color="#fff"></a-light>
 
 <!-- sky-->
- <a-sky id="sky1" color="#e95d44" ></a-sky>
+ <a-sky id="sky1" color="black">
+<!--  audioanalyser-volume-bind="analyserEl: #analyser; component: material; property: color; max: 240 100 70; min: 200 90 60; multiplier: .018"> -->
+</a-sky>
+
+<!-- #E54 color="#e95d44" 	233, 93, 68  -->
 
 </a-scene>
 

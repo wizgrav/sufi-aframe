@@ -62,8 +62,8 @@ module.exports.Component = {
     amplitudeVariance: {default: 0.3},
 
     // Wave speed and variance.
-    speed: {default: 1},
-    speedVariance: {default: 2},
+    speed: {default: 2},
+    speedVariance: {default: 1},
 
     // Material.
     color: {default: 0xd6e8e1},

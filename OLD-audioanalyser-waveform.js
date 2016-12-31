@@ -1,19 +1,30 @@
+
+
+
+setTimeout(slowReg, 5000);
+function slowReg() {
+console.log('waveForm setTimeout');
+
+
+
 var perlin = new ImprovedNoise();
 
-var RINGCOUNT = 190;
-var SEGMENTS = 4;
+var RINGCOUNT = 180; //160, 200
+var SEGMENTS = 32;  //256
 
 /**
  * Generate rings (THREE.Line) and transform them using audioanalyser waveform data.
  * Adapted from https://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/
  */
+
+
 AFRAME.registerComponent('audioanalyser-waveform', {
   dependencies: ['audioanalyser'],
 
   schema: {
-    maxHeight: {default: 0.9},
-    multiplier: {default: .02},
-    radius: {default: 8},
+    maxHeight: {default: 0.2},
+    multiplier: {default: .01},
+    radius: {default: 1},
   },
 
   init: function () {
@@ -47,7 +58,7 @@ AFRAME.registerComponent('audioanalyser-waveform', {
     for (i = 0; i < RINGCOUNT; i++) {
       material = new THREE.LineBasicMaterial({
         color: 0xffffff,
-        linewidth: 1 ,
+        linewidth: 4 ,
         opacity : 0.7,
         blending : THREE.AdditiveBlending,
         depthTest : true,
@@ -162,4 +173,5 @@ function ImprovedNoise () {
               grad(p[BB+1], xMinus1, yMinus1, zMinus1))));
     }
   }
+}
 }

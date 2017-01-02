@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pala Pala</title>
+    <meta name="description" content="Music And Motion">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+<!-- livereload ~/SufiPlayer/kframe-master/components/audioanalyser/examples/volume -p 8000
+-->
+
+<script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+<script src="https://samsunginternet.github.io/a-frame-components/dist/ocean-plane.js"></script>
+<!--
+<script src="https://rawgit.com/bryik/aframe-terrain-model-component/master/dist/aframe-terrain-model-component.min.js"></script>
+-->
+
+
+<script src="components/aframe-fence-component.js"></script>
+<script src="components/aframe-animation-component.js"></script>
+<script src="components/aframe-extras.controls.js"></script>
+<script src="components/aframe-extras.primitives.js"></script>
+
+
+
+
+
+
+<!--<script src="components/aframe-fit-texture-component.js"></script> -->
+
+
+    <!-- livereload ~/SufiPlayer/sufi-aframe -p 8000 -->
+
+  </head>
+  <body>
+
+
+
+
+
+<a-scene antialias="true">
+
+<!--Load audio and visual assets. -->
+
+
+<!-- GET LAZY LOADER FOR OCEAN -->
+
+    <a-assets timeout="4000">
+    <img id="pala" src="assets/palav2.png">
+    <img id="texture" src="assets/texturec2.png">
+    <img id="water-normal" src="https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/waternormals.jpg" crossorigin="anonymous" />
+    <img id="skysphere" src="assets/palav2.png" crossorigin="anonymous" />
+<!--    <img id="dotty" src="assets/dots.png"> -->
+    <a-mixin id="wallyA" material="src: #pala; opacity: 1">
+    <a-mixin id="sides" material="src: #pala;">
+    </a-assets>
+
+
+<!--Create player's position and controls via "camera." Add a "fence" to prevent walking through walls.-->
+<!--<a-camera id="camera" universal-controls position="0 1.8 5" fence="width: 16; depth: 14; x0: 0; z0: 0">
+-->
+
+
+<a-camera id="camera" position="0 5 3" universal controls>  <!-- fence="width: 19.8; depth: 19; x0: 0; z0: 0"> -->
+      </a-camera>
+
+
+
+
+<!-- sounds in space -->
+
+<!--
+<a-entity id="pulser" cursor-listener geometry="primitive: sphere;" material="color: #3d8b75" metalness="1" position="0 4 0"
+ animation="property: geometry.radius; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: .5 1 .5"
+ animation__color="property: material.color; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: #365">
+          <a-animation cursor-listener id="bye" attribute="scale" begin="click" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
+        </a-entity> -->
+
+
+
+
+
+<!--  animation="property: rotation; easing: easeInSine; loop: true; to: 0 0 270" -->
+
+
+<!-- small, conic display stand below floating sphere-->
+
+<!--
+  <a-cone id="cone" color="black" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="0 0 0" metalness=".7"
+  side="double"
+  shader="flat"
+  ></a-cone> -->
+<!--  audioanalyser="src: #datura; enableBeatDetection: false; enableWaveform: false">
+-->
+
+<!--
+<a-ocean rotation="0 270 0" position="10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
+<a-ocean rotation="0 90 180" position="-10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
+-->
+
+<a-plane class="clickable" mixin="sides" width="20" height="20" rotation="0 270 0" position="10 10 0" ></a-plane>
+<a-plane class="clickable" mixin="sides" width="20" height="20" rotation="0 90 180" position="-10 10 0" ></a-plane>
+
+<a-plane class="clickable" width="20" height="20" rotation="0 270 0" position="9.75 10 0" material="color: yellow; opacity: .1"></a-plane>
+<a-plane class="clickable" width="20" height="20" rotation="0 90 180" position="-9.75 10 0" material="color: yellow; opacity: .1"></a-plane>
+
+<a-ocean-plane width="20" height="20" position="0 -5 0" material="normalMap: #water-normal; sphericalEnvMap: #skysphere;"></a-ocean-plane>
+
+
+<!-- floor-->
+  <a-plane class="clickable" rotation="-90 0 0" position="0 0 0" width="20" height="20" material="src: #texture; repeat: 100 20;"></a-plane>
+
+<!--  <a-entity terrain-model='DEM: url(assets/kipHillc.bin); texture: url(assets/kipHillc.png); planeWidth: 200; planeHeight: 200; segmentsWidth: 199; segmentsHeight: 199; zPosition: 10;'></a-entity>
+-->
+
+<!-- ceiling -->
+
+<!-- light-->
+
+<a-light type="ambient" color="#fff"></a-light>
+
+<!-- sky-->
+ <a-sky id="sky1" color="black">
+</a-sky>
+
+<!-- #E54 color="#e95d44" 	233, 93, 68  -->
+
+</a-scene>
+
+  </body>
+</html>

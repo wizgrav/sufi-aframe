@@ -7,14 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-<!-- livereload ~/SufiPlayer/kframe-master/components/audioanalyser/examples/volume -p 8000
--->
 
 <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
-<!--<script src="https://samsunginternet.github.io/a-frame-components/dist/ocean-plane.js"></script>-->
-<script src="js/ocean-plane.js"></script>
-<script src="https://rawgit.com/bryik/aframe-terrain-model-component/master/dist/aframe-terrain-model-component.min.js"></script>
-
 
 <script src="components/aframe-fence-component.js"></script>
 <script src="components/aframe-animation-component.js"></script>
@@ -22,53 +16,18 @@
 <script src="components/aframe-extras.controls.js"></script>
 <script src="components/aframe-extras.primitives.js"></script>
 <script src="components/aframe-randomizer-components.js"></script>
+<script src="components/aframe-terrain-model-component.min.js"></script>
 <script src="js/audioanalyser-waveform.js"></script>
 <script src="js/audioanalyser-volume-scale.js"></script>
+<script src="js/ocean-plane.js"></script>
 
 
-
-
-
-<!--<script src="components/aframe-fit-texture-component.js"></script> -->
 
 
     <!-- livereload ~/SufiPlayer/sufi-aframe -p 8000 -->
 
   </head>
   <body>
-
-<!--
-<script>
-// Component to change to execute multiple actions on click.
-// not sure if that "if" statement works
-AFRAME.registerComponent('cursor-listener', {
-  init: function () {
-    var audio = document.querySelector('#datura');
-    if (audio =! "playing") {
-    this.el.addEventListener('click', function (evt) {
-      document.querySelector('#dat1').components.sound.playSound();
-    });
-  };
-};
-});
-</script>
--->
-
-<!--
-<script>
-AFRAME.registerComponent('wall-jitter', {
-  init: function () {
-    var SCALER = [20, 20.5, 21, 21.5];
-    this.el.addEventListener('click', function (evt) {
-      var randomIndex = Math.floor(Math.random() * SCALER.length);
-      this.setAttribute('geometry', 'width', SCALER[randomIndex]);
-      console.log('I was clicked at: ', evt.detail.intersection.point);
-    });
-  }
-});
-
-</script>
--->
 
 
 <script>
@@ -113,15 +72,10 @@ AFRAME.registerComponent('wall-jitter2', {
 
 
 
-
-
-
-<a-scene antialias="true">
+<a-scene fog antialias="true">
 
 <!--Load audio and visual assets. -->
-
-
-<!-- GET LAZY LOADER FOR OCEAN -->
+<!-- GET LAZY LOADER FOR OCEAN? -->
 
     <a-assets timeout="3000">
     <audio id="blank" src="assets/blank.mp3">
@@ -132,19 +86,18 @@ AFRAME.registerComponent('wall-jitter2', {
     <img id="skysphere" src="assets/palav2.png" crossorigin="anonymous" />
     <a-mixin id="wallyA" material="src: #pala; opacity: 1">
     <a-mixin id="sides" material="src: #pala;">
-<!--    <a-mixin id="sink" position="y:10" animation="property: position; easing: easeInSine; dur: 5000; to: 5; delay: 4000"> -->
     <a-mixin id="rando" material="opacity: .4"
      random-color="min: .91 .36 .27; max: .91 .36 .27"
      animation="property: random-color.max; easing: easeInSine; dur: 100; to: 1 1 1; startEvents: click">
     </a-assets>
 
 
-<!--Create player's position and controls via "camera." Add a "fence" to prevent walking through walls.-->
-<!--<a-camera id="camera" universal-controls position="0 1.8 5" fence="width: 16; depth: 14; x0: 0; z0: 0">
--->
+<!--Create player's position and controls via camera.
+Add a "fence" to prevent walking through walls.-->
 
 
-<a-camera id="camera" position="0 5 3" fence="width: 19.8; depth: 19; x0: 0; z0: 0">
+<!-- fence="width: 19.8; depth: 19; x0: 0; z0: 0" -->
+<a-camera id="camera" position="0 5 3" >
 <!-- <a-entity id="boomer" geometry="primitive: sphere; radius: .2"> -->
 <a-entity raycaster="objects: .clickable; interval: 250" cursor></a-entity>
       </a-camera>
@@ -152,14 +105,7 @@ AFRAME.registerComponent('wall-jitter2', {
 
 
 
-<!-- sounds in space -->
-
-<!--
-<a-entity id="pulser" cursor-listener geometry="primitive: sphere;" material="color: #3d8b75" metalness="1" position="0 4 0"
- animation="property: geometry.radius; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: .5 1 .5"
- animation__color="property: material.color; dir: alternate; easing: easeInSine; dur: 1000; loop: true; to: #365">
-          <a-animation cursor-listener id="bye" attribute="scale" begin="click" dur="300" from="2 2 2" to="0 0 0" fill="forward"></a-animation>
-        </a-entity> -->
+<!-- sound -->
 
 <a-entity id="dat1" sound="src: #datura" position="0 3 0"
 </a-entity>
@@ -172,18 +118,6 @@ AFRAME.registerComponent('wall-jitter2', {
 >
 </a-entity>
 
-<!--  animation="property: rotation; easing: easeInSine; loop: true; to: 0 0 270" -->
-
-
-<!-- small, conic display stand below floating sphere-->
-
-<!--
-  <a-cone id="cone" color="black" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="0 0 0" metalness=".7"
-  side="double"
-  shader="flat"
-  ></a-cone> -->
-<!--  audioanalyser="src: #datura; enableBeatDetection: false; enableWaveform: false">
--->
 
 <!-- water for walls-->
 <a-ocean class="clickable" rotation="0, 0, 0" position="0 -5 -10" width="22" depth="50" density="40"
@@ -217,10 +151,7 @@ AFRAME.registerComponent('wall-jitter2', {
 
 </a-ocean>
 
-<!--
-<a-ocean rotation="0 270 0" position="10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
-<a-ocean rotation="0 90 180" position="-10 -5 0" width="22" depth="50" density="40" material="src: #pala; opacity: 1;"></a-ocean>
--->
+<!-- Flat walls with clickable art/changes -->
 
 <a-plane id="sidea" class="clickable" mixin="sides" width="20" height="20" rotation="0 270 0" position="10 10 0" >
  <a-animation attribute="position"
@@ -252,17 +183,21 @@ AFRAME.registerComponent('wall-jitter2', {
               delay="90000"></a-animation>
 </a-plane>
 
-<!--    <a-mixin id="sink" position="y:10" animation="property: position; easing: easeInSine; dur: 5000; to: 5; delay: 4000"> -->
 
+<!-- the actual ocean -->
 
 <a-ocean-plane width="20" height="20" position="0 -5 0" material="normalMap: #water-normal; sphericalEnvMap: #skysphere;"></a-ocean-plane>
 
 
 <!-- floor-->
 
-
   <a-plane class="clickable" rotation="-90 0 0" position="0 0 0" width="20" height="20" material="src: #texture; repeat: 100 20;"
     >
+    <a-animation attribute="position"
+                 dur="2000"
+                 fill="forwards"
+                 to="0 -100 0"
+                 delay="187000"></a-animation>
     <a-animation attribute="rotation"
                  dur="10000"
                  fill="forwards"
@@ -270,11 +205,10 @@ AFRAME.registerComponent('wall-jitter2', {
                  delay="60000"></a-animation>
   </a-plane>
 
-<!--   animation="property: position; easing: easeInSine; dur: 5000; to: 0 -10 0; delay: 4000" -->
 
-
-
-<!-- TEMPORARY CEILING -->
+<!-- Temporary ceiling;
+  this is to block the viz element in the sky,
+  and to more gradually bring it in -->
 
 <a-plane rotation="90 0 0" position="0 20 0" width="30" height="30" color="black" material="opacity: 1">
  <a-animation attribute="opacity"
@@ -284,22 +218,18 @@ AFRAME.registerComponent('wall-jitter2', {
              delay="33000"></a-animation>
 </a-plane>
 
+<!-- Island Terrain -->
 
+  <a-entity position="0 -20 0" terrain-model='DEM: url(assets/kip-sq-scaled.bin); texture: url(assets/kip-color3.png); planeWidth: 128; planeHeight: 128; segmentsWidth: 199; segmentsHeight: 199; zPosition: 18;'>
+    <a-animation attribute="position"
+                dur="2000"
+                fill="forwards"
+                to="0 -1.5 0"
+                delay="186000"></a-animation>
+  </a-entity>
 
-
-
-<!-- MAKE TEXTURE IMAGE A POWER OF TWO -->
-<!--
-  <a-entity position="0 -2 0" terrain-model='DEM: url(assets/kipHillc.bin); texture: url(assets/kipHillc2llc.png); planeWidth: 30; planeHeight: 30; segmentsWidth: 199; segmentsHeight: 199; zPosition: 15;'></a-entity>
--->
-
-
-<!-- ceiling -->
-<!--  <a-ocean rotation="-270 0 0" position="0 15 0" width="22" depth="50" density="40" material="src: #pala; opacity: .9;"></a-ocean>-->
-s
 <!-- light-->
 
-<!--<a-light id="lighty" type="directional" color="#fff" intensity="0.5" position="0 6 0"></a-light>-->
 <a-light type="ambient" color="#fff" intensity=".5">
  <a-animation attribute="intensity"
               dur="1000"
@@ -309,11 +239,9 @@ s
 </a-light>
 
 <!-- sky-->
- <a-sky id="sky1" color="black">
-<!--  audioanalyser-volume-bind="analyserEl: #analyser; component: material; property: color; max: 240 100 70; min: 200 90 60; multiplier: .018"> -->
-</a-sky>
 
-<!-- #E54 color="#e95d44" 	233, 93, 68  -->
+ <a-sky id="sky1" color="black">
+</a-sky>
 
 </a-scene>
 

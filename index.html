@@ -19,6 +19,7 @@
 <script src="components/aframe-terrain-model-component.min.js"></script>
 <script src="js/audioanalyser-waveform.js"></script>
 <script src="js/audioanalyser-volume-scale.js"></script>
+<script src="js/audioanalyser-volume-radius.js"></script>
 <script src="js/ocean-plane.js"></script>
 
 
@@ -70,15 +71,16 @@ AFRAME.registerComponent('wall-jitter2', {
 </script>
 
 
-
-
 <a-scene fog antialias="true">
 
 <!--Load audio and visual assets. -->
 <!-- GET LAZY LOADER FOR OCEAN? -->
 
-    <a-assets timeout="3000">
+    <a-assets timeout="4000">
+
+<!-- Blank "Dummy" Audio File
     <audio id="blank" src="assets/blank.mp3">
+  -->
     <audio id="datura" src="assets/datura2.mp3" preload="auto" autoplay>
     <img id="pala" src="assets/palav2.png">
     <img id="texture" src="assets/texturec2.png">
@@ -89,20 +91,25 @@ AFRAME.registerComponent('wall-jitter2', {
     <a-mixin id="rando" material="opacity: .4"
      random-color="min: .91 .36 .27; max: .91 .36 .27"
      animation="property: random-color.max; easing: easeInSine; dur: 100; to: 1 1 1; startEvents: click">
+
+<!-- AUDIO STEMS
+     <audio id="bass" src="mp3s/bass.mp3" autoplay="false">
+     <audio id="drums" src="mp3s/drums.mp3" autoplay="false">
+     <audio id="guitarA" src="mp3s/guitarA.mp3" autoplay="false">
+     <audio id="guitarB" src="mp3s/guitarB.mp3" autoplay="false">
+-->
     </a-assets>
 
 
 <!--Create player's position and controls via camera.
-Add a "fence" to prevent walking through walls.-->
 
-
+Add a "FENCE" to prevent walking through walls.-->
 <!-- fence="width: 19.8; depth: 19; x0: 0; z0: 0" -->
+
+
 <a-camera id="camera" position="0 5 3" >
-<!-- <a-entity id="boomer" geometry="primitive: sphere; radius: .2"> -->
 <a-entity raycaster="objects: .clickable; interval: 250" cursor></a-entity>
       </a-camera>
-
-
 
 
 <!-- sound -->
@@ -118,6 +125,44 @@ Add a "fence" to prevent walking through walls.-->
 >
 </a-entity>
 
+
+<!-- Stems
+For some reason, if these aren't commented out,
+they push the camera down to the ocean floor... -->
+
+<!--
+<a-entity id="stemA" sound="src: #guitarA" position="7 5 -5"
+</a-entity>
+<a-entity id="stemB" sound="src: #drums" position="-7 5 -5"
+</a-entity>
+<a-entity id="stemC" sound="src: #datura" position="7 5 5"
+</a-entity>
+<a-entity id="stemD" sound="src: #datura" position="-7 5 5"
+</a-entity>
+-->
+
+
+<!-- "speakers" -->
+
+<a-cone id="coneA" color="#E35" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="7 -.6 -5.5" rotation="180 0 0" metalness=".7"
+ audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
+ audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ side="double" ></a-cone>
+
+<a-cone id="coneB" color="#547" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="-7 -.6 -5.5" rotation="180 0 0" metalness=".7"
+ audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
+ audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ side="double" ></a-cone>
+
+<a-cone id="coneC" color="#498" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="7 -.6 5.5" rotation="180 0 0" metalness=".7"
+ audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
+ audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ side="double" ></a-cone>
+
+<a-cone id="coneD" color="#D86" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="-7 -.6 5.5" rotation="180 0 0" metalness=".7"
+ audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
+ audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ side="double" ></a-cone>
 
 <!-- water for walls-->
 <a-ocean class="clickable" rotation="0, 0, 0" position="0 -5 -10" width="22" depth="50" density="40"
@@ -218,7 +263,7 @@ Add a "fence" to prevent walking through walls.-->
              delay="33000"></a-animation>
 </a-plane>
 
-<!-- Island Terrain -->
+<!-- Island Terrain (Kipahulu region; Maui, Hawaii) -->
 
   <a-entity position="0 -20 0" terrain-model='DEM: url(assets/kip-sq-scaled.bin); texture: url(assets/kip-color3.png); planeWidth: 128; planeHeight: 128; segmentsWidth: 199; segmentsHeight: 199; zPosition: 18;'>
     <a-animation attribute="position"

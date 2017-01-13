@@ -21,6 +21,8 @@
 <script src="js/audioanalyser-volume-scale.js"></script>
 <script src="js/audioanalyser-volume-radius.js"></script>
 <script src="js/ocean-plane.js"></script>
+<script src="js/clubber.min.js"></script>
+<script src="js/clubberize.js"></script>
 
 
 
@@ -32,6 +34,28 @@
 
 
 <script>
+
+AFRAME.registerSystem('clubber', {
+  init: function () {
+    this.clubber = new Clubber();
+    this.clubber.listen(document.querySelector("audio"));
+    this.func = Clubberize(this.clubber, "https://wizgrav.github.io/clubber/tool/?tool=1&t0=0123&r0=16,48,48,128&s0=0.1,0.1,0.1,0.1&a0=1,1,1,1&t1=0123&r1=48,64,48,128&s1=0.1,0.1,0.1,0.1&a1=1,1,1,1&t2=0123&r2=64,80,48,128&s2=0.1,0.1,0.1,0.1&a2=1,1,1,1&t3=0123&r3=80,112,48,128&s3=0.1,0.1,0.1,0.1&a3=1,1,1,1&red=smoothstep(iMusic%5B0%5D.z%2C%201.33%2C%20length(iMusic%5B0%5D.xw))&green=smoothstep(iMusic%5B1%5D.z%2C%201.33%2C%20length(iMusic%5B1%5D.xw))&blue=smoothstep(iMusic%5B2%5D.z%2C%201.33%2C%20length(iMusic%5B2%5D.xw))&alpha=smoothstep(iMusic%5B3%5D.z%2C%201.33%2C%20length(iMusic%5B3%5D.xw))&track=https%3A%2F%2Fsoundcloud.com%2Fyoussef-ali-6%2Fzorba-the-greek");
+  },
+  
+  getData: function (time) {
+    if(this.lastTime === time) return this.dt;
+    this.clubber.update(time);
+    this.dt = this.func(time/1000);
+    this.lastTime = time;
+    return this.dt;
+  },
+  
+  getSpectrum: function (time) {
+    this.getData(time);
+    return this.clubber.notes;
+  }
+});
+                         
 AFRAME.registerComponent('wall-jitter1', {
   init: function () {
     var SCALER = [20.2, 20.4, 20, 20.6, 20.8, 21,
@@ -118,8 +142,7 @@ Add a "FENCE" to prevent walking through walls.-->
 </a-entity>
 
 <a-entity id="analyser"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-waveform="radius: .25; maxHeight: .9"
+ 
  rotation="90 45 0"
  position="0 22 0"
 >
@@ -145,29 +168,29 @@ they push the camera down to the ocean floor... -->
 <!-- "speakers" -->
 
 <a-cone id="coneA" color="#E35" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="7 -.6 -5.5" rotation="180 0 0" metalness=".7"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ 
+ audioanalyser-volume-radius="multiplier: 3; which: red; analyserEl: #analyser"
  side="double" ></a-cone>
 
 <a-cone id="coneB" color="#547" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="-7 -.6 -5.5" rotation="180 0 0" metalness=".7"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ 
+ audioanalyser-volume-radius="multiplier: 3; which: green;  analyserEl: #analyser"
  side="double" ></a-cone>
 
 <a-cone id="coneC" color="#498" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="7 -.6 5.5" rotation="180 0 0" metalness=".7"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ 
+ audioanalyser-volume-radius="multiplier: 3; which: blue;  analyserEl: #analyser"
  side="double" ></a-cone>
 
 <a-cone id="coneD" color="#D86" radius-bottom="1.5" radius-top="0.5" height="1.5" open-ended="false" position="-7 -.6 5.5" rotation="180 0 0" metalness=".7"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-volume-radius="multiplier: .005; analyserEl: #analyser"
+ 
+ audioanalyser-volume-radius="multiplier: 3; which: alpha;  analyserEl: #analyser"
  side="double" ></a-cone>
 
 <!-- water for walls-->
 <a-ocean class="clickable" rotation="0, 0, 0" position="0 -5 -10" width="22" depth="50" density="40"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-volume-scale="multiplier: .05;" mixin="wallyA" >
+
+ audioanalyser-volume-scale="multiplier: 10; which: blue; " mixin="wallyA" >
  <a-animation attribute="rotation"
               dur="5000"
               fill="forwards"
@@ -181,8 +204,8 @@ they push the camera down to the ocean floor... -->
 
 </a-ocean>
 <a-ocean class="clickable" rotation="0, 180, 180" position="0 -5 10" width="22" depth="50" density="40"
- audioanalyser="src: #datura; enableBeatDetection: false; enableLevels: false; smoothingTimeConstant: .4"
- audioanalyser-volume-scale="multiplier: .05; analyserEl: #analyser" mixin="wallyA" >
+ 
+ audioanalyser-volume-scale="multiplier: 10; which: blue;  analyserEl: #analyser" mixin="wallyA" >
  <a-animation attribute="rotation"
               dur="5000"
               fill="forwards"

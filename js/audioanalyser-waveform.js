@@ -66,7 +66,7 @@ AFRAME.registerComponent('audioanalyser-waveform', {
     }
   },
 
-  tick: function () {
+  tick: function (time) {
     var VOL_SENS;
     var analyserComponent;
     var colors = this.colors;
@@ -75,13 +75,9 @@ AFRAME.registerComponent('audioanalyser-waveform', {
     var levels = this.levels;
     var rings = this.rings;
 
-    analyserComponent = el.components.audioanalyser;
-    if (!analyserComponent.analyser) { return; }
-
+    var clubber = this.el.sceneEl.systems.clubber, cdata = clubber.getData(time), spectrum=clubber.getSpectrum(time);
     VOL_SENS = 2;
-    levels.push(analyserComponent.volume / 256 * VOL_SENS);  // 256 is max level.
-    levels.shift(1);
-
+    
     // Add a new color onto the list.
     this.noisePos += 0.005;
     colors.push(Math.abs(perlin.noise(this.noisePos, 0, 0)));
@@ -89,7 +85,7 @@ AFRAME.registerComponent('audioanalyser-waveform', {
 
     // Write current waveform into all rings.
     this.geometry.vertices.forEach(function (vertex, index) {
-      vertex.z = Math.min(analyserComponent.waveform[index] * data.multiplier,
+      vertex.z = Math.min(spectrum[index] * data.multiplier,
                           data.maxHeight);
     });
 

@@ -1,20 +1,16 @@
 AFRAME.registerComponent('audioanalyser-volume-scale', {
   schema: {
     analyserEl: {type: 'selector'},
-    multiplier: {type: 'number', default: 1}
+    multiplier: {type: 'number', default: 1},
+    which: {default: "red", oneOf:["red", "green", "blue", "alpha"]}
   },
 
-  tick: function () {
-    var analyserEl = this.data.analyserEl || this.el;
-    var analyserComponent;
+  tick: function (time) {
     var el = this.el;
     var volume;
-
-    analyserComponent = analyserEl.components.audioanalyser;
-    if (!analyserComponent.analyser) { return; }
-
-    volume = analyserComponent.volume * this.data.multiplier;
+    var dt = el.sceneEl.systems.clubber.getData(time)
+    volume = dt[this.data.which] * this.data.multiplier;
     el.setAttribute('scale', {
       z: volume});
-  }
+    }
 });
